@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 - EasonSaid</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="https://api.easonsaid.cn/datouzai_icon.php">
+    <style>
+        /* 修复居中问题的404页面样式 */
+        body {
+            padding: 15px 20px;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            margin: 0;
+            /* 默认背景色，在图片加载前展示 */
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 60px auto 0;
+            height: calc(100vh - 90px);
+            height: calc(100dvh - 90px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            padding: 15px 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .title {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 0 auto;
+        }
+        
+        .error-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .error-code {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1;
+        }
+        
+        .error-title {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            box-shadow: 0 3px 12px rgba(52, 152, 219, 0.3);
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(41, 128, 185, 0.9);
+        }
+        
+        .home-icon {
+            margin-right: 6px;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 15px 0;
+            font-size: 0.8rem;
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .error-code {
+                font-size: 4.5rem;
+            }
+            
+            .error-title {
+                font-size: 1.4rem;
+            }
+            
+            .card {
+                padding: 25px;
+                max-width: 90%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.3rem;
+            }
+            
+            .error-message {
+                font-size: 0.95rem;
+            }
+            
+            .card {
+                padding: 20px;
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .footer {
+                margin-top: 20px;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="title">EasonSaid</h1>
+        </header>
+        
+        <div class="card">
+            <div class="error-container">
+                <div class="error-code">404</div>
+                <h2 class="error-title">页面未找到</h2>
+                <p class="error-message">
+                    Sorry! 稳唔到你要访问嘅页面！
+                </p>
+                <a href="/" class="btn">
+                    <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    返回首页
+                </a>
+            </div>
+        </div>
+        
+        
+        <footer class="footer">
+            <b>© <span class="year"></span> EasonSaid By <a href="https://www.rsnocsi.cn" target="_blank"
+                    rel="noopener">Abyss</a></b>
+            <br>
+            <b>Special Thanks to 缪斯茶</b>
+            <br>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">粤ICP备2025432639号-2</a>
+        </footer>
+    </div>
+    
+    <script>
+        // 404页面背景图片设置
+        const PORTRAIT_BG_URL = 'https://api.easonsaid.cn/portrait_images.php';
+        const LANDSCAPE_BG_URL = 'https://api.easonsaid.cn/landscape_images.php';
+        
+        function setBackgroundImage() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const baseUrl = isPortrait ? PORTRAIT_BG_URL : LANDSCAPE_BG_URL;
+            
+            const timestamp = new Date().getTime();
+            const bgUrl = `${baseUrl}?t=${timestamp}`;
+            
+            document.body.classList.add('bg-loading');
+            
+            const img = new Image();
+            
+            img.onload = function() {
+                document.body.classList.remove('bg-loading');
+                document.body.classList.add('bg-loaded');
+                document.documentElement.style.setProperty('--bg-image', `url('${bgUrl}')`);
+            };
+            
+            img.onerror = function() {
+                document.body.classList.remove('bg-loading');
+                document.body.classList.add('bg-error');
+            };
+            
+            img.src = bgUrl;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            setBackgroundImage();
+            // 自动填充版权年份
+            document.querySelectorAll('.year').forEach(el => el.textContent = new Date().getFullYear());
+        });
+        
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(setBackgroundImage, 250);
+        });
+        
+        window.addEventListener('orientationchange', function() {
+            setTimeout(setBackgroundImage, 100);
+        });
+    </script>
+</body>
+</html>

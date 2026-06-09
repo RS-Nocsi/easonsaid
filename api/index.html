@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EasonSaid API - 为开发者提供陈奕迅歌词、壁纸、图标等开放接口">
+    <meta name="keywords" content="EasonSaid, API, 陈奕迅, 歌词API, 壁纸API, 开放接口">
+    <meta property="og:title" content="EasonSaid API">
+    <meta property="og:description" content="免费开放的陈奕迅歌词、壁纸、图标 API 接口">
+    <meta property="og:type" content="website">
+    <title>EasonSaid API</title>
+    <link rel="icon" type="image/x-icon" href="https://api.easonsaid.cn/datouzai_icon.php">
+    <style>
+        /* ========== Reset & Variables ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --accent: #2ecc71;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
+            --code-bg: #1e293b;
+            --gradient-1: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            --gradient-2: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(52, 152, 219, 0.15) 0%, transparent 60%);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+                sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        /* ========== Background Decoration ========== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-hero);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ========== Navbar ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 24px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            transition: background var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-logo .logo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: inline-block;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all var(--transition);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-github {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 22px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all var(--transition);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ========== Hero Section ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 60px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin: 0 auto 36px;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            color: var(--text-primary);
+        }
+
+        /* ========== Section Common ========== */
+        .section {
+            padding: 80px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ========== API Cards (Home) ========== */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .api-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .api-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .api-card:hover::before {
+            opacity: 1;
+        }
+
+        .api-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .api-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .api-card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .api-card .method-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .method-get {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+
+        .api-card .endpoint {
+            display: block;
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: var(--code-bg);
+            border-radius: 8px;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            font-size: 0.82rem;
+            color: var(--accent);
+            word-break: break-all;
+        }
+
+        /* ========== Docs Page ========== */
+        .docs-layout {
+            display: flex;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 80px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .docs-sidebar h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .docs-sidebar ul {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .docs-sidebar li a {
+            display: block;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            border-left: 2px solid transparent;
+            transition: all var(--transition);
+        }
+
+        .docs-sidebar li a:hover,
+        .docs-sidebar li a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: var(--primary);
+        }
+
+        /* Docs Content */
+        .docs-content {
+            flex: 1;
+            min-width: 0;
+            padding-bottom: 80px;
+        }
+
+        .docs-content h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .docs-content h2:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .docs-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 12px;
+            color: var(--text-primary);
+        }
+
+        .docs-content p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .docs-content>section {
+            margin-bottom: 48px;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-block-header span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            color: var(--accent);
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        .code-block pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        .code-block code {
+            font-family: inherit;
+        }
+
+        /* Inline code */
+        .docs-content code:not(.code-block code) {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.88rem;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            color: var(--primary);
+        }
+
+        /* Syntax highlighting */
+        .code-block .hl-string {
+            color: #a5d6ff;
+        }
+
+        .code-block .hl-url {
+            color: #7dd3fc;
+        }
+
+        .code-block .hl-comment {
+            color: #64748b;
+        }
+
+        .code-block .hl-key {
+            color: #c084fc;
+        }
+
+        .code-block .hl-value {
+            color: #a5d6ff;
+        }
+
+        /* Param table */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+        }
+
+        .param-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .param-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .param-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .param-table .param-name {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            color: var(--primary);
+            font-size: 0.88rem;
+        }
+
+        .param-table .param-type {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            color: var(--accent);
+            font-size: 0.82rem;
+        }
+
+        .param-required {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .param-optional {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Endpoint block */
+        .endpoint-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 12px 0 20px;
+        }
+
+        .endpoint-block .method {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            flex-shrink: 0;
+        }
+
+        .endpoint-block .url {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* Response preview */
+        .response-preview {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin: 12px 0 20px;
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #a5d6ff;
+            word-break: break-all;
+        }
+
+        /* Tip / Note boxes */
+        .tip-box {
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            display: flex;
+            gap: 12px;
+        }
+
+        .tip-box.info {
+            background: rgba(52, 152, 219, 0.08);
+            border: 1px solid rgba(52, 152, 219, 0.15);
+            color: #93c5fd;
+        }
+
+        .tip-box.success {
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.15);
+            color: #86efac;
+        }
+
+        .tip-box .tip-icon {
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: var(--primary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 12px;
+        }
+
+        /* ========== Back to Top ========== */
+        .back-to-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all var(--transition);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: -100%;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 0 24px 24px;
+                transition: top var(--transition);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+                top: 54px;
+            }
+
+            .nav-links li {
+                list-style: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .nav-links a {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 18px;
+                font-size: 1rem;
+            }
+
+            .hero {
+                padding: 100px 20px 50px;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-desc {
+                font-size: 1rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .section {
+                padding: 50px 20px;
+            }
+
+            .section-header h2 {
+                font-size: 1.6rem;
+            }
+
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Docs mobile */
+            .docs-layout {
+                flex-direction: column;
+                padding: 70px 20px 40px;
+                gap: 0;
+            }
+
+            .docs-sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+                padding-bottom: 24px;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 32px;
+            }
+
+            .docs-sidebar ul {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .docs-sidebar li a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+
+            .docs-sidebar li a:hover,
+            .docs-sidebar li a.active {
+                border-left-color: transparent;
+                border-bottom-color: var(--primary);
+            }
+
+            .docs-sidebar h4 {
+                margin-bottom: 8px;
+            }
+
+            .docs-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .param-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .endpoint-block {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-container {
+                height: 54px;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-dot"></span>
+                EasonSaid API
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="active">首页</a></li>
+                <li><a href="/docs.html">文档</a></li>
+                <li><a href="https://easonsaid.cn" target="_blank" rel="noopener">EasonSaid 主站 ↗</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">开放 API · 免费调用</div>
+            <h1>
+                为开发者提供的<br>
+                <span class="gradient-text">EasonSaid 开放接口</span>
+            </h1>
+            <p class="hero-desc">
+                由一百多位EF分享的随机Eason歌词、高清壁纸、大头仔图标 —— 简单的 HTTP 请求即可接入你的项目，无需认证，永久免费，完全开源。
+            </p>
+            <div class="hero-actions">
+                <a href="/docs.html" class="btn btn-primary">
+                    📖 查看文档
+                </a>
+                <a href="#apis" class="btn btn-secondary">
+                    ⚡ 浏览接口
+                </a>
+                <a href="https://github.com/RS-Nocsi/easonsaid" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Overview -->
+    <section class="section" id="apis">
+        <div class="section-header">
+            <h2>可用接口</h2>
+            <p>所有接口均支持跨域调用（CORS），无需 API Key</p>
+        </div>
+
+        <div class="api-grid">
+            <!-- Output API -->
+            <div class="api-card">
+                <div class="api-card-icon">🎵</div>
+                <h3>随机歌词</h3>
+                <p>随机返回一条Eason歌词分享，包含分享者、歌词内容和出处信息。支持纯文本和 JSON 两种格式。</p>
+                <span class="method-badge method-get">GET</span>
+                <code class="endpoint">/output.php</code>
+            </div>
+
+            <!-- Landscape API -->
+            <div class="api-card">
+                <div class="api-card-icon">🖼️</div>
+                <h3>横屏壁纸</h3>
+                <p>随机返回一张横屏（landscape）高清壁纸图片，不缓存，直接以图片流输出，可用于网页背景等场景。</p>
+                <span class="method-badge method-get">GET</span>
+                <code class="endpoint">/landscape_images.php</code>
+            </div>
+
+            <!-- Portrait API -->
+            <div class="api-card">
+                <div class="api-card-icon">📱</div>
+                <h3>竖屏壁纸</h3>
+                <p>随机返回一张竖屏（portrait）高清壁纸图片，适用于手机壁纸或移动端背景。</p>
+                <span class="method-badge method-get">GET</span>
+                <code class="endpoint">/portrait_images.php</code>
+            </div>
+
+            <!-- Datouzai API -->
+            <div class="api-card">
+                <div class="api-card-icon">😄</div>
+                <h3>大头仔图标</h3>
+                <p>随机返回某个城市的对应大头仔图标，可用于网站图标等（就像本站一样）</p>
+                <span class="method-badge method-get">GET</span>
+                <code class="endpoint">/datouzai_icon.php</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="text-align:center;">
+        <div class="tip-box info" style="max-width:600px;margin:0 auto;">
+            <span class="tip-icon">📖</span>
+            <div>所有接口均支持跨域（CORS），永久开源免费。接口详细用法请查看 <a href="/docs.html">API 文档</a>。</div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="https://easonsaid.cn" target="_blank" rel="noopener">EasonSaid 主站</a>
+            <a href="/docs.html">API 文档</a>
+            <a href="https://www.rsnocsi.cn" target="_blank" rel="noopener">站长 Abyss</a>
+        </div>
+        <p>© <span id="year"></span> EasonSaid API</p>
+    </footer>
+
+    <!-- Back to top -->
+    <button class="back-to-top" id="backToTop" aria-label="回到顶部" onclick="window.scrollTo({top:0})">
+        ↑
+    </button>
+
+    <script>
+        // Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // 点击空白处关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Back to top visibility
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+
+        // Copy code
+        function copyCode(btn) {
+            const pre = btn.closest('.code-block').querySelector('pre');
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '已复制 ✓';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '复制';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

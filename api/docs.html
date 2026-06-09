@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EasonSaid API 文档 - 接口使用说明和示例">
+    <title>API 文档 - EasonSaid</title>
+    <link rel="icon" type="image/x-icon" href="https://api.easonsaid.cn/datouzai_icon.php">
+    <style>
+        /* ========== Reset & Variables ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --accent: #2ecc71;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
+            --code-bg: #1e293b;
+            --gradient-1: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(52, 152, 219, 0.15) 0%, transparent 60%);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+                sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-hero);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ========== Navbar ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 24px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-logo .logo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: inline-block;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all var(--transition);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 22px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all var(--transition);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ========== Docs Layout ========== */
+        .docs-layout {
+            display: flex;
+            gap: 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .docs-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 80px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .docs-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .docs-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 28px;
+        }
+
+        .sidebar-section h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .sidebar-section ul {
+            list-style: none;
+        }
+
+        .sidebar-section li a {
+            display: block;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            border-left: 2px solid transparent;
+            transition: all var(--transition);
+        }
+
+        .sidebar-section li a:hover,
+        .sidebar-section li a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: var(--primary);
+        }
+
+        /* Docs Content */
+        .docs-content {
+            flex: 1;
+            min-width: 0;
+            padding-bottom: 80px;
+        }
+
+        .docs-content>section {
+            margin-bottom: 64px;
+        }
+
+        .docs-content h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            scroll-margin-top: 80px;
+        }
+
+        .docs-content h2:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .docs-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 12px;
+            color: var(--text-primary);
+            scroll-margin-top: 80px;
+        }
+
+        .docs-content p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .docs-content ul,
+        .docs-content ol {
+            color: var(--text-secondary);
+            margin: 0 0 16px 24px;
+            line-height: 1.8;
+        }
+
+        .docs-content li {
+            margin-bottom: 6px;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            overflow: hidden;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-block-header span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            color: var(--accent);
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        .code-block pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        .code-block code {
+            font-family: inherit;
+        }
+
+        /* Inline code */
+        .docs-content code:not(.code-block code) {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.88rem;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            color: var(--primary);
+        }
+
+        /* Syntax highlighting */
+        .hl-string {
+            color: #a5d6ff;
+        }
+
+        .hl-url {
+            color: #7dd3fc;
+        }
+
+        .hl-comment {
+            color: #64748b;
+        }
+
+        .hl-key {
+            color: #c084fc;
+        }
+
+        .hl-value {
+            color: #a5d6ff;
+        }
+
+        .hl-tag {
+            color: #f472b6;
+        }
+
+        .hl-attr {
+            color: #c084fc;
+        }
+
+        /* Endpoint block */
+        .endpoint-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 12px 0 20px;
+        }
+
+        .endpoint-block .method {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            flex-shrink: 0;
+        }
+
+        .endpoint-block .url {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* Param table */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+        }
+
+        .param-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .param-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .param-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .param-name {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            color: var(--primary);
+            font-size: 0.88rem;
+        }
+
+        .param-type {
+            font-family: "SF Mono", "Fira Code", Consolas, monospace;
+            color: var(--accent);
+            font-size: 0.82rem;
+        }
+
+        .badge-required {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-optional {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-default {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Response block */
+        .response-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            overflow: hidden;
+        }
+
+        .response-block-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .status-200 {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+
+        .response-block pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        /* Tip / Note boxes */
+        .tip-box {
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            display: flex;
+            gap: 12px;
+        }
+
+        .tip-box.info {
+            background: rgba(52, 152, 219, 0.08);
+            border: 1px solid rgba(52, 152, 219, 0.15);
+            color: #93c5fd;
+        }
+
+        .tip-box.success {
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.15);
+            color: #86efac;
+        }
+
+        .tip-box.warning {
+            background: rgba(241, 196, 15, 0.08);
+            border: 1px solid rgba(241, 196, 15, 0.15);
+            color: #fde68a;
+        }
+
+        .tip-box .tip-icon {
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            color: var(--primary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 12px;
+        }
+
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all var(--transition);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        /* ========== Mobile ========== */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: -100%;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 0 24px 24px;
+                transition: top var(--transition);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+                top: 54px;
+            }
+
+            .nav-links li {
+                list-style: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .nav-links a {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 18px;
+                font-size: 1rem;
+            }
+
+            .docs-layout {
+                flex-direction: column;
+                padding: 70px 20px 40px;
+                gap: 0;
+            }
+
+            .docs-sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+                padding-bottom: 24px;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 32px;
+            }
+
+            .sidebar-section ul {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .sidebar-section li a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+
+            .sidebar-section li a:hover,
+            .sidebar-section li a.active {
+                border-left-color: transparent;
+                border-bottom-color: var(--primary);
+            }
+
+            .sidebar-section h4 {
+                margin-bottom: 8px;
+            }
+
+            .docs-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .param-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .endpoint-block {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                height: 54px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-dot"></span>
+                EasonSaid API
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">首页</a></li>
+                <li><a href="/docs.html" class="active">文档</a></li>
+                <li><a href="https://easonsaid.cn" target="_blank" rel="noopener">EasonSaid 主站 ↗</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h4>开始使用</h4>
+                <ul>
+                    <li><a href="#overview">概述</a></li>
+                    <li><a href="#base-url">基础信息</a></li>
+                    <li><a href="#quickstart">快速开始</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>接口文档</h4>
+                <ul>
+                    <li><a href="#api-output">随机歌词</a></li>
+                    <li><a href="#api-landscape">横屏壁纸</a></li>
+                    <li><a href="#api-portrait">竖屏壁纸</a></li>
+                    <li><a href="#api-datouzai">大头仔图标</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>其他</h4>
+                <ul>
+                    <li><a href="#faq">常见问题</a></li>
+                    <li><a href="#changelog">更新日志</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="docs-content">
+            <!-- Overview -->
+            <section id="overview">
+                <h2>概述</h2>
+                <p>EasonSaid API 是一组免费开放的 HTTP 接口，提供Eason歌词随机获取、高清壁纸随机获取、以及大头仔图标等服务。</p>
+                <p>所有接口均无需认证（无需 API Key），支持跨域调用（CORS），可直接使用。</p>
+
+                <div class="tip-box info">
+                    <span class="tip-icon">💡</span>
+                    <div>EasonSaid API 永久免费开放。如果你觉得有用，欢迎向朋友推荐 <a href="https://easonsaid.cn" target="_blank">EasonSaid
+                            主站</a>！</div>
+                </div>
+            </section>
+
+            <!-- Base URL -->
+            <section id="base-url">
+                <h2>基础信息</h2>
+
+                <h3>Base URL</h3>
+                <div class="endpoint-block">
+                    <span class="method">BASE</span>
+                    <span class="url">https://api.easonsaid.cn</span>
+                </div>
+
+                <h3>请求方式</h3>
+                <p>所有接口均使用 <code>GET</code> 请求。</p>
+
+                <h3>跨域支持</h3>
+                <p>所有接口返回 <code>Access-Control-Allow-Origin: *</code> 头，支持任意来源的跨域请求。</p>
+
+                <h3>响应格式</h3>
+                <ul>
+                    <li><strong>歌词接口</strong>：默认返回纯文本（<code>text/plain</code>），可通过参数切换为
+                        JSON（<code>application/json</code>）</li>
+                    <li><strong>壁纸接口</strong>：返回图片流（<code>image/webp</code>、<code>image/jpeg</code> 等）</li>
+                    <li><strong>图标接口</strong>：返回图标流（<code>image/x-icon</code>、<code>image/png</code> 等）</li>
+                </ul>
+            </section>
+
+            <!-- Quick Start -->
+            <section id="quickstart">
+                <h2>快速开始</h2>
+
+                <h3>1. 获取随机歌词</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>cURL</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code>curl https://api.easonsaid.cn/output.php</code></pre>
+                </div>
+                <p>返回示例：</p>
+                <div class="response-block">
+                    <div class="response-block-header">
+                        <span class="status-badge status-200">200 OK</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted)">text/plain</span>
+                    </div>
+                    <pre><code>“Abyss” 向你分享：“其实人生并非虚耗，何来尘埃飞舞”。它出自：《沙龙》。</code></pre>
+                </div>
+
+                <h3>2. 在网页中使用壁纸</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>JavaScript</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-comment">// 设置随机横屏壁纸为页面背景</span>
+document.body.style.backgroundImage =
+  <span class="hl-string">"url('https://api.easonsaid.cn/landscape_images.php')"</span>;</code></pre>
+                </div>
+
+                <h3>3. 设置网站图标为大头仔</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>HTML</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code>&lt;link rel=<span class="hl-string">"icon"</span> href=<span class="hl-string">"https://api.easonsaid.cn/datouzai_icon.php"</span>&gt;</code></pre>
+                </div>
+            </section>
+
+            <!-- ==================== API: Output ==================== -->
+            <section id="api-output">
+                <h2>🎵 随机歌词</h2>
+                <p>随机返回一条陈奕迅歌词分享，包含分享者、歌词内容和出处信息。数据来源于 <a href="https://easonsaid.cn">EasonSaid</a> 网站收集的歌词数据库。</p>
+
+                <h3>请求</h3>
+                <div class="endpoint-block">
+                    <span class="method">GET</span>
+                    <span class="url">https://api.easonsaid.cn/output.php</span>
+                </div>
+
+                <h3>请求参数</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必填</th>
+                            <th>默认值</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">output</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><span class="badge-optional">可选</span></td>
+                            <td><span class="badge-default">text</span></td>
+                            <td>输出格式。<code>text</code> 返回纯文本，<code>json</code> 返回 JSON 格式</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>示例请求</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>cURL</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-comment"># 纯文本格式（默认）</span>
+curl https://api.easonsaid.cn/output.php
+
+<span class="hl-comment"># JSON 格式</span>
+curl https://api.easonsaid.cn/output.php?output=json</code></pre>
+                </div>
+
+                <h3>响应示例 - 纯文本格式</h3>
+                <div class="response-block">
+                    <div class="response-block-header">
+                        <span class="status-badge status-200">200 OK</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted)">text/plain; charset=utf-8</span>
+                    </div>
+                    <pre><code>“Abyss” 向你分享：“其实人生并非虚耗，何来尘埃飞舞”。它出自：《沙龙》。</code></pre>
+                </div>
+
+                <h3>响应示例 - JSON 格式</h3>
+                <div class="response-block">
+                    <div class="response-block-header">
+                        <span class="status-badge status-200">200 OK</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted)">application/json; charset=utf-8</span>
+                    </div>
+                    <pre><code>{
+  <span class="hl-key">"success"</span>: <span class="hl-value">true</span>,
+  <span class="hl-key">"data"</span>: {
+    <span class="hl-key">"id"</span>: <span class="hl-value">1</span>,
+    <span class="hl-key">"Contents"</span>: <span class="hl-string">"其实人生并非虚耗，何来尘埃飞舞"</span>,
+    <span class="hl-key">"Source"</span>: <span class="hl-string">"沙龙"</span>,
+    <span class="hl-key">"Contributors"</span>: <span class="hl-string">"Abyss"</span>,
+    <span class="hl-key">"Time"</span>: <span class="hl-string">"2025-10-29"</span>,
+    <span class="hl-key">"LyricShareCount"</span>: <span class="hl-value">1</span>,
+    <span class="hl-key">"SongShareCount"</span>: <span class="hl-value">6</span>
+  },
+  <span class="hl-key">"formatted"</span>: <span class="hl-string">"“Abyss” 向你分享：“其实人生并非虚耗，何来尘埃飞舞”。它出自：《沙龙》。"</span>
+}</code></pre>
+                </div>
+
+                <h3>JSON 字段说明</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>字段</th>
+                            <th>类型</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">success</span></td>
+                            <td><span class="param-type">boolean</span></td>
+                            <td>请求是否成功</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.id</span></td>
+                            <td><span class="param-type">integer</span></td>
+                            <td>歌词记录 ID</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.Contents</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>歌词内容</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.Source</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>歌词出处（歌曲名）</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.Contributors</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>分享者名称</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.Time</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>分享时间</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.LyricShareCount</span></td>
+                            <td><span class="param-type">integer</span></td>
+                            <td>分享这句歌词的人数</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">data.SongShareCount</span></td>
+                            <td><span class="param-type">integer</span></td>
+                            <td>这首歌一共被分享了几次</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">formatted</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td>格式化后的完整文本</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>前端调用示例</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>JavaScript (Fetch API)</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-key">async function</span> getRandomLyrics() {
+  <span class="hl-key">const</span> response = <span class="hl-key">await</span> fetch(<span class="hl-string">'https://api.easonsaid.cn/output.php?output=json'</span>);
+  <span class="hl-key">const</span> data = <span class="hl-key">await</span> response.json();
+
+  <span class="hl-key">if</span> (data.success) {
+    console.log(<span class="hl-string">`分享者: ${data.data.Contributors}`</span>);
+    console.log(<span class="hl-string">`歌词: ${data.data.Contents}`</span>);
+    console.log(<span class="hl-string">`出处: ${data.data.Source}`</span>);
+    <span class="hl-comment">// 或直接使用格式化文本</span>
+    console.log(data.formatted);
+  }
+}
+
+getRandomLyrics();</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>Python</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-key">import</span> requests
+
+response = requests.get(<span class="hl-string">'https://api.easonsaid.cn/output.php'</span>)
+print(response.text)
+<span class="hl-comment"># 输出: “Abyss” 向你分享：“其实人生并非虚耗，何来尘埃飞舞”。它出自：《沙龙》。</span>
+
+<span class="hl-comment"># JSON 格式</span>
+data = requests.get(<span class="hl-string">'https://api.easonsaid.cn/output.php?output=json'</span>).json()
+print(data[<span class="hl-string">'data'</span>][<span class="hl-string">'Contents'</span>])</code></pre>
+                </div>
+            </section>
+
+            <!-- ==================== API: Landscape ==================== -->
+            <section id="api-landscape">
+                <h2>🖼️ 横屏壁纸</h2>
+                <p>随机返回一张横屏（landscape）高清壁纸图片。每次请求返回不同的图片，直接以图片流输出，不缓存。</p>
+
+                <h3>请求</h3>
+                <div class="endpoint-block">
+                    <span class="method">GET</span>
+                    <span class="url">https://api.easonsaid.cn/landscape_images.php</span>
+                </div>
+
+                <h3>请求参数</h3>
+                <p>无。直接访问 URL 即可获取随机图片。</p>
+
+                <h3>响应</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>属性</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">Content-Type</span></td>
+                            <td>图片 MIME
+                                类型（<code>image/webp</code>、<code>image/jpeg</code>、<code>image/png</code>、<code>image/gif</code>）
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">Cache-Control</span></td>
+                            <td><code>no-cache, must-revalidate</code>（不缓存）</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>使用方式</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>HTML / CSS / JavaScript</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-comment">&lt;!-- 直接在 img 标签中使用 --&gt;</span>
+&lt;img src=<span class="hl-string">"https://api.easonsaid.cn/landscape_images.php"</span> alt=<span class="hl-string">"随机横屏壁纸"</span>&gt;
+
+<span class="hl-comment">/* CSS 背景图 */</span>
+.hero {
+  background: url(<span class="hl-string">'https://api.easonsaid.cn/landscape_images.php'</span>) center/cover;
+}
+
+<span class="hl-comment">// JavaScript 动态设置</span>
+document.body.style.backgroundImage =
+  <span class="hl-string">"url('https://api.easonsaid.cn/landscape_images.php?t="</span> + Date.now() + <span class="hl-string">"')"</span>;</code></pre>
+                </div>
+
+                <div class="tip-box success">
+                    <span class="tip-icon">✅</span>
+                    <div>壁纸接口返回的图片支持 <code>&lt;img&gt;</code> 标签、CSS <code>background-image</code>、以及
+                        <code>fetch()</code> 等多种方式使用。
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== API: Portrait ==================== -->
+            <section id="api-portrait">
+                <h2>📱 竖屏壁纸</h2>
+                <p>随机返回一张竖屏（portrait）高清壁纸图片，适用于手机壁纸或移动端背景。行为与横屏壁纸接口一致。</p>
+
+                <h3>请求</h3>
+                <div class="endpoint-block">
+                    <span class="method">GET</span>
+                    <span class="url">https://api.easonsaid.cn/portrait_images.php</span>
+                </div>
+
+                <h3>请求参数</h3>
+                <p>无。直接访问 URL 即可获取随机图片。</p>
+
+                <h3>响应</h3>
+                <p>与横屏壁纸接口相同，返回图片流。</p>
+
+                <h3>使用方式</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>JavaScript - 根据屏幕方向自动切换</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-key">function</span> setRandomBackground() {
+  <span class="hl-key">const</span> isPortrait = window.innerHeight > window.innerWidth;
+  <span class="hl-key">const</span> baseUrl = isPortrait
+    ? <span class="hl-string">'https://api.easonsaid.cn/portrait_images.php'</span>
+    : <span class="hl-string">'https://api.easonsaid.cn/landscape_images.php'</span>;
+
+  document.body.style.backgroundImage =
+    <span class="hl-string">`url('${baseUrl}?t=${Date.now()}')`</span>;
+}
+
+<span class="hl-comment">// 页面加载时设置</span>
+setRandomBackground();
+
+<span class="hl-comment">// 屏幕旋转时切换</span>
+window.addEventListener(<span class="hl-string">'orientationchange'</span>, setRandomBackground);</code></pre>
+                </div>
+            </section>
+
+            <!-- ==================== API: Datouzai ==================== -->
+            <section id="api-datouzai">
+                <h2>😄 大头仔图标</h2>
+                <p>随机返回某个城市的大头仔图标。适合作为网站 favicon 使用。</p>
+
+                <h3>请求</h3>
+                <div class="endpoint-block">
+                    <span class="method">GET</span>
+                    <span class="url">https://api.easonsaid.cn/datouzai_icon.php</span>
+                </div>
+
+                <h3>请求参数</h3>
+                <p>无。直接访问 URL 即可获取随机图标。</p>
+
+                <h3>响应</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>属性</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">Content-Type</span></td>
+                            <td>图标 MIME
+                                类型（<code>image/x-icon</code>、<code>image/png</code>、<code>image/gif</code>、<code>image/webp</code>）
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">Cache-Control</span></td>
+                            <td><code>no-cache, no-store, must-revalidate</code>（完全禁用缓存）</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>使用方式</h3>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>HTML</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-comment">&lt;!-- 将网站图标设为随机大头仔 --&gt;</span>
+&lt;head&gt;
+  &lt;link rel=<span class="hl-string">"icon"</span> href=<span class="hl-string">"https://api.easonsaid.cn/datouzai_icon.php"</span>&gt;
+&lt;/head&gt;</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>JavaScript - 动态切换图标</span>
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <pre><code><span class="hl-comment">// 动态更新 favicon</span>
+<span class="hl-key">function</span> refreshFavicon() {
+  <span class="hl-key">let</span> link = document.querySelector(<span class="hl-string">'link[rel="icon"]'</span>);
+  <span class="hl-key">if</span> (!link) {
+    link = document.createElement(<span class="hl-string">'link'</span>);
+    link.rel = <span class="hl-string">'icon'</span>;
+    document.head.appendChild(link);
+  }
+  link.href = <span class="hl-string">`https://api.easonsaid.cn/datouzai_icon.php?t=${Date.now()}`</span>;
+}
+
+refreshFavicon();</code></pre>
+                </div>
+
+                <div class="tip-box warning">
+                    <span class="tip-icon">⚠️</span>
+                    <div>此接口已设置 <code>Cache-Control: no-cache</code>，浏览器每次访问都会获取新图标。如果你需要在 <code>&lt;img&gt;</code>
+                        标签中使用并希望每次都显示不同的图标，建议添加时间戳参数避免浏览器缓存。</div>
+                </div>
+            </section>
+
+            <!-- ==================== FAQ ==================== -->
+            <section id="faq">
+                <h2>常见问题</h2>
+
+                <h3>需要注册或获取 API Key 吗？</h3>
+                <p>不需要。所有接口完全开放，无需任何认证即可调用。</p>
+
+                <h3>有调用频率限制吗？</h3>
+                <p>目前没有严格的频率限制，但请合理使用，避免过于频繁的请求（建议间隔不低于 1 秒）。我们会根据实际使用情况调整策略。</p>
+
+                <h3>可以在商业项目中使用吗？</h3>
+                <p>可以。API 免费开放使用，本项目（主站以及API）均已在Github中以MIT协议开源。但请注意歌词内容版权归原作者所有，壁纸图片来源于网络收集。如涉及版权问题，请联系我们处理。</p>
+
+                <h3>如何获取多条歌词？</h3>
+                <p>目前歌词接口每次只返回一条随机记录。如需多条，可多次调用并自行去重。后续可能会增加批量获取的参数支持。</p>
+
+                <h3>壁纸图片的分辨率是多少？</h3>
+                <p>横屏壁纸适用于桌面背景（16:9 / 16:10 等比例），竖屏壁纸适用于手机屏幕（9:16 等比例）。图片均为 WebP 格式，文件体积小且质量高。</p>
+
+                <h3>遇到问题如何反馈？</h3>
+                <p>可通过以下方式联系：</p>
+                <ul>
+                    <li>微信：RS-Nocsi</li>
+                    <li>邮箱：3134570359@qq.com</li>
+                </ul>
+            </section>
+
+            <!-- ==================== Changelog ==================== -->
+            <section id="changelog">
+                <h2>更新日志</h2>
+
+                <h3>2026-06-09</h3>
+                <ul>
+                    <li>API 文档站上线</li>
+                    <li>开放 <code>output.php</code> 歌词接口，支持 text / json 双格式</li>
+                    <li>开放 <code>landscape_images.php</code> 横屏壁纸接口</li>
+                    <li>开放 <code>portrait_images.php</code> 竖屏壁纸接口</li>
+                    <li>开放 <code>datouzai_icon.php</code> 大头仔图标接口</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="https://easonsaid.cn" target="_blank" rel="noopener">EasonSaid 主站</a>
+            <a href="https://github.com/RS-Nocsi/easonsaid" target="_blank" rel="noopener"><svg width="16" height="16"
+                    viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:4px">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                </svg>GitHub</a>
+            <a href="https://www.rsnocsi.cn" target="_blank" rel="noopener">站长 Abyss</a>
+        </div>
+        <p>© <span id="year"></span> EasonSaid API</p>
+    </footer>
+
+    <!-- Back to top -->
+    <button class="back-to-top" id="backToTop" aria-label="回到顶部" onclick="window.scrollTo({top:0})">
+        ↑
+    </button>
+
+    <script>
+        // Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Hamburger
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // 点击空白处关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Back to top
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+
+        // Copy code
+        function copyCode(btn) {
+            const pre = btn.closest('.code-block').querySelector('pre');
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '已复制 ✓';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '复制';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Active sidebar link on scroll
+        const sections = document.querySelectorAll('.docs-content > section[id]');
+        const sidebarLinks = document.querySelectorAll('.docs-sidebar a');
+
+        function updateActiveLink() {
+            let current = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 120) {
+                    current = section.id;
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveLink, { passive: true });
+        updateActiveLink();
+    </script>
+</body>
+
+</html>

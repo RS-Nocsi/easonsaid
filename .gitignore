@@ -1,0 +1,9 @@
+# 服务器配置（open_basedir 等，因服务器而异）
+.user.ini
+api/.user.ini
+.htaccess
+
+# 系统文件
+.DS_Store
+Thumbs.db
+bash.exe.stackdump
